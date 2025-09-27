@@ -12,9 +12,7 @@ help: ## Show this help message
 
 setup-dev: ## Setup development environment
 	@echo "Setting up development environment..."
-	pip install --user pre-commit black isort flake8 pytest bandit safety
-	pre-commit install
-	@echo "Development environment setup complete!"
+	@bash scripts/dev-setup.sh
 
 install-deps: ## Install all service dependencies
 	@echo "Installing dependencies for all services..."
@@ -132,6 +130,49 @@ docs-serve: ## Serve documentation locally (if available)
 		echo "MkDocs not installed. Install with: pip install mkdocs"; \
 	fi
 
+docs-generate: ## Generate API documentation from services
+	@echo "Generating API documentation..."
+	@python3 scripts/generate-api-docs.py
+
+docs-generate-live: ## Generate API documentation from running services
+	@echo "Generating API documentation from running services..."
+	@python3 scripts/generate-api-docs.py --fetch-running
+
+docs-clean: ## Clean generated documentation
+	@echo "Cleaning generated documentation..."
+	@rm -rf docs/api/
+
+##@ Development Tools
+
+scaffold-service: ## Create a new service (usage: make scaffold-service SERVICE=MyNewService)
+	@if [ -z "$(SERVICE)" ]; then \
+		echo "Error: SERVICE parameter is required. Usage: make scaffold-service SERVICE=MyNewService"; \
+		exit 1; \
+	fi
+	@python3 scripts/scaffold-service.py $(SERVICE)
+
+scaffold-worker: ## Create a new worker service (usage: make scaffold-worker SERVICE=MyWorker)
+	@if [ -z "$(SERVICE)" ]; then \
+		echo "Error: SERVICE parameter is required. Usage: make scaffold-worker SERVICE=MyWorker"; \
+		exit 1; \
+	fi
+	@python3 scripts/scaffold-service.py $(SERVICE) --type worker
+
+debug-services: ## Debug all Q2 Platform services
+	@echo "Debugging all Q2 Platform services..."
+	@python3 scripts/debug-service.py
+
+debug-service: ## Debug specific service (usage: make debug-service SERVICE=agentQ)
+	@if [ -z "$(SERVICE)" ]; then \
+		echo "Error: SERVICE parameter is required. Usage: make debug-service SERVICE=agentQ"; \
+		exit 1; \
+	fi
+	@python3 scripts/debug-service.py --service $(SERVICE)
+
+debug-infrastructure: ## Debug infrastructure services
+	@echo "Debugging infrastructure services..."
+	@python3 scripts/debug-service.py --infrastructure
+
 ##@ Development Workflow
 
 dev-check: format-check lint security-scan test ## Run all code quality checks (CI pipeline)
@@ -150,4 +191,8 @@ serve-managerq: ## Start managerQ development server
 # Utility targets
 check-deps: ## Check for missing dependencies
 	@echo "Checking for missing Python dependencies..."
-	@python -c "import sys; import pkg_resources; pkg_resources.require(open('constraints.txt').read().splitlines())" 2>/dev/null || echo "Some dependencies may be missing"
+	@bash scripts/validate-dev-env.sh
+
+validate-dev: ## Validate development environment setup
+	@echo "Validating development environment..."
+	@bash scripts/validate-dev-env.sh
