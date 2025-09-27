@@ -35,7 +35,7 @@ class WorkflowExecutor:
         self._task_producer: pulsar.Producer = None
         self._conditional_producer: pulsar.Producer = None
         self._status_consumer: pulsar.Consumer = None
-        self._jinja_env = jinja2.Environment()
+        self._jinja_env = jinja2.Environment(autoescape=True)
         self.task_dispatcher = task_dispatcher
 
     def start(self):

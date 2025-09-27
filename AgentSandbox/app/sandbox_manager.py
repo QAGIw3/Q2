@@ -10,7 +10,9 @@ import json
 
 logger = logging.getLogger(__name__)
 
-SANDBOX_WORKSPACE_DIR = os.environ.get("SANDBOX_WORKSPACE_DIR", "/tmp/qagi_sandboxes")
+import tempfile
+
+SANDBOX_WORKSPACE_DIR = os.environ.get("SANDBOX_WORKSPACE_DIR", tempfile.gettempdir() + "/qagi_sandboxes")
 
 class SandboxManager:
     """

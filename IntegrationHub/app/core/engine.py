@@ -35,7 +35,7 @@ class FlowExecutionEngine:
     def __init__(self):
         self._connectors: Dict[str, 'BaseConnector'] = {}
         self.logger = logger
-        self._jinja_env = jinja2.Environment(loader=jinja2.BaseLoader())
+        self._jinja_env = jinja2.Environment(loader=jinja2.BaseLoader(), autoescape=True)
 
     def register_connector(self, connector: 'BaseConnector'):
         if connector.connector_id in self._connectors:

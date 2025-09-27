@@ -34,7 +34,7 @@ class WorkflowExecutor:
         self.task_states = {task_id: TaskStatus.PENDING for task_id in self.tasks}
         self.task_results = {}
         self.worker = worker
-        self.jinja_env = jinja2.Environment()
+        self.jinja_env = jinja2.Environment(autoescape=True)
         logger.info(f"[{self.workflow_id}] Initialized workflow executor.")
 
     def start(self):
@@ -265,7 +265,7 @@ class Worker:
 
     def dispatch_agent_task(self, workflow_id: str, task: dict, task_results: dict):
         """Sends a task to the agent task topic."""
-        jinja_env = jinja2.Environment()
+        jinja_env = jinja2.Environment(autoescape=True)
         
         try:
             # Render the prompt using Jinja2 to insert results from previous tasks

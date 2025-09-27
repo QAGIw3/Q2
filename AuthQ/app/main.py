@@ -79,4 +79,7 @@ def health_check():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    import os
+    host = os.getenv("API_HOST", "127.0.0.1")  # Default to localhost instead of all interfaces
+    port = int(os.getenv("API_PORT", "8000"))
+    uvicorn.run(app, host=host, port=port)
