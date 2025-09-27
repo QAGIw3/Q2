@@ -20,7 +20,7 @@ from fastapi import FastAPI
 import uvicorn
 import threading
 
-from shared.opentelemetry.tracing import setup_tracing
+from shared.opentelemetry.tracing import setup_tracing, get_tracer
 from shared.observability.logging_config import setup_logging
 from shared.vault_client import VaultClient
 from shared.pulsar_client import shared_pulsar_client
@@ -87,7 +87,8 @@ Begin!
 """
 
 # Initialize tracing and logging
-setup_tracing(app=None)
+setup_tracing(app=None, service_name="agentQ")
+tracer = get_tracer(__name__)
 setup_logging(service_name="agentQ")
 logger = structlog.get_logger("agentq")
 
@@ -545,7 +546,6 @@ def setup_reflector_agent(config: dict, vault_client: VaultClient):
     return toolbox, context_manager
 
 def run_agent():
-    global running
     logger.info("Starting agentQ...")
 
     # --- Config Loading ---
@@ -590,6 +590,9 @@ def run_agent():
         context_manager.connect()
         qpulse_client = QuantumPulseClient(base_url=config.get('services', {}).get('qpulse_url'))
 
+
+    # Run setup tasks that need configuration
+    setup_agent_memory(config)
 
     # The rest of the agent runs the same, regardless of personality
     pulsar_client = None
@@ -697,8 +700,5 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, shutdown)
     signal.signal(signal.SIGTERM, shutdown)
     
-    # Run setup tasks that need the event loop
-    setup_agent_memory(config)
-
     # Run the main agent loop
     run_agent()
