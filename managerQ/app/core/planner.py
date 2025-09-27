@@ -89,7 +89,20 @@ class Planner:
         """
         Phase 1: Analyze the user's prompt for clarity and create high-level steps.
         """
-        analysis_prompt = f"{ANALYSIS_SYSTEM_PROMPT.format(insights=self.retrieved_insights, lessons=self.retrieved_lessons)}\n\n**User Request:**\n{prompt}"
+        # Format insights section for the prompt
+        insights_section = ""
+        if self.retrieved_insights:
+            insights_section = f"**Relevant Insights from Past Workflows:**\n{self.retrieved_insights}\n"
+        
+        # Format lessons section for the prompt  
+        lessons_section = ""
+        if self.retrieved_lessons:
+            lessons_section = f"**Past Lessons:**\n{self.retrieved_lessons}\n"
+        
+        # Use manual replacement instead of .format() to avoid JSON brace conflicts
+        analysis_prompt = ANALYSIS_SYSTEM_PROMPT.replace("{insights}", insights_section)
+        analysis_prompt = analysis_prompt.replace("{lessons}", lessons_section)
+        analysis_prompt += f"\n\n**User Request:**\n{prompt}"
         
         messages = [QPChatMessage(role="system", content=analysis_prompt)]
         request = QPChatRequest(
@@ -114,8 +127,17 @@ class Planner:
         """
         high_level_steps = "\n".join(f"- {step}" for step in analysis.high_level_steps)
         
+        # Create the planner prompt with context information
+        context_section = ""
+        if self.retrieved_insights or self.retrieved_lessons:
+            context_section = "\n\n**Context from Past Experience:**\n"
+            if self.retrieved_insights:
+                context_section += f"**Relevant Insights:**\n{self.retrieved_insights}\n\n"
+            if self.retrieved_lessons:
+                context_section += f"**Past Lessons:**\n{self.retrieved_lessons}\n\n"
+        
         planner_prompt = (
-            f"{PLANNER_SYSTEM_PROMPT.format(insights=self.retrieved_insights, lessons=self.retrieved_lessons)}\n\n"
+            f"{PLANNER_SYSTEM_PROMPT}{context_section}\n\n"
             f"**Goal Summary:**\n{analysis.summary}\n\n"
             f"**High-Level Steps:**\n{high_level_steps}\n\n"
             f"**Original User Request:**\n{original_prompt}"
