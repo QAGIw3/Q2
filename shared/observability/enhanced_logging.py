@@ -12,7 +12,18 @@ import uuid
 from typing import Any, Dict, Optional, Callable
 from datetime import datetime
 
-import structlog
+try:
+    import structlog
+    STRUCTLOG_AVAILABLE = True
+except ImportError:
+    STRUCTLOG_AVAILABLE = False
+    # Create a fallback structlog-like interface
+    class MockStructlog:
+        @staticmethod
+        def get_logger(name):
+            return logging.getLogger(name)
+    
+    structlog = MockStructlog()
 
 from ..error_handling.exceptions import Q2Exception, ErrorSeverity
 
@@ -29,7 +40,10 @@ class EnhancedLogger:
     def __init__(self, name: str, service_name: Optional[str] = None):
         self.name = name
         self.service_name = service_name
-        self._logger = structlog.get_logger(name)
+        if STRUCTLOG_AVAILABLE:
+            self._logger = structlog.get_logger(name)
+        else:
+            self._logger = logging.getLogger(name)
 
     def _get_context(self, extra_context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Get logging context with correlation IDs and service info."""
@@ -52,17 +66,26 @@ class EnhancedLogger:
     def debug(self, message: str, **kwargs):
         """Log debug message with enhanced context."""
         context = self._get_context(kwargs)
-        self._logger.debug(message, **context)
+        if STRUCTLOG_AVAILABLE:
+            self._logger.debug(message, **context)
+        else:
+            self._logger.debug(f"{message} - {context}")
 
     def info(self, message: str, **kwargs):
         """Log info message with enhanced context."""
         context = self._get_context(kwargs)
-        self._logger.info(message, **context)
+        if STRUCTLOG_AVAILABLE:
+            self._logger.info(message, **context)
+        else:
+            self._logger.info(f"{message} - {context}")
 
     def warning(self, message: str, **kwargs):
         """Log warning message with enhanced context."""
         context = self._get_context(kwargs)
-        self._logger.warning(message, **context)
+        if STRUCTLOG_AVAILABLE:
+            self._logger.warning(message, **context)
+        else:
+            self._logger.warning(f"{message} - {context}")
 
     def error(self, message: str, exception: Optional[Exception] = None, **kwargs):
         """Log error message with enhanced context and exception details."""
@@ -80,7 +103,10 @@ class EnhancedLogger:
                 context["error_context"] = exception.context
                 context["error_suggestions"] = exception.suggestions
 
-        self._logger.error(message, **context)
+        if STRUCTLOG_AVAILABLE:
+            self._logger.error(message, **context)
+        else:
+            self._logger.error(f"{message} - {context}", exc_info=exception)
 
     def critical(self, message: str, exception: Optional[Exception] = None, **kwargs):
         """Log critical message with enhanced context."""
@@ -98,7 +124,10 @@ class EnhancedLogger:
                 context["error_context"] = exception.context
                 context["error_suggestions"] = exception.suggestions
 
-        self._logger.critical(message, **context)
+        if STRUCTLOG_AVAILABLE:
+            self._logger.critical(message, **context)
+        else:
+            self._logger.critical(f"{message} - {context}", exc_info=exception)
 
     def log_operation_start(self, operation: str, **kwargs):
         """Log the start of an operation."""
