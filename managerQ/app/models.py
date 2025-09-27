@@ -104,9 +104,9 @@ class LoopBlock(BaseModel):
 # Update the TaskBlock to include the new LoopBlock
 TaskBlock = Union[WorkflowTask, ConditionalBlock, ApprovalBlock, LoopBlock]
 
-# Update Pydantic's forward references to handle all recursive TaskBlock definitions at once
-ConditionalBranch.update_forward_refs(TaskBlock=TaskBlock)
-LoopBlock.update_forward_refs(TaskBlock=TaskBlock)
+# Update Pydantic v2 forward references to handle all recursive TaskBlock definitions
+ConditionalBranch.model_rebuild()
+LoopBlock.model_rebuild()
 
 
 class WorkflowStatus(str, Enum):
