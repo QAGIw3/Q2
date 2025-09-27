@@ -1,0 +1,42 @@
+[flake8]
+# Standard flake8 configuration for Q2 Platform
+max-line-length = 120
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    ENV,
+    build,
+    dist,
+    *.egg-info,
+    .pytest_cache,
+    .coverage,
+    htmlcov,
+    .tox,
+    migrations,
+    .idea,
+    .vscode,
+    node_modules
+
+# Error codes to ignore
+ignore = 
+    E203,
+    E501,
+    W503,
+    F401
+
+# Error codes to always check
+select = E,W,F,C
+
+# Complexity
+max-complexity = 12
+
+# Docstring checks
+docstring-convention = google
+
+per-file-ignores =
+    tests/*:E501,F401,F811
+    __init__.py:F401
+    */migrations/*:E501,F401

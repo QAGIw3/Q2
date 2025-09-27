@@ -1,0 +1,228 @@
+name: Q2 Platform CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pre-commit flake8 black isort bandit safety
+    
+    - name: Cache pre-commit
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+    
+    - name: Run pre-commit
+      run: pre-commit run --all-files
+    
+    - name: Run security scan
+      run: |
+        bandit -r . --exclude=tests,*/tests/* -f json -o bandit-report.json || true
+        bandit -r . --exclude=tests,*/tests/* -ll
+    
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-scan-results
+        path: bandit-report.json
+
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [agentQ, managerQ, VectorStoreQ, KnowledgeGraphQ, QuantumPulse, AuthQ]
+    
+    services:
+      # Test databases and services
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Check if service exists
+      id: check-service
+      run: |
+        if [ -d "${{ matrix.service }}" ] && [ -f "${{ matrix.service }}/requirements.txt" ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Install service dependencies
+      if: steps.check-service.outputs.exists == 'true'
+      run: |
+        pip install pytest pytest-cov pytest-mock
+        pip install -r ${{ matrix.service }}/requirements.txt -c constraints.txt || true
+    
+    - name: Run tests for ${{ matrix.service }}
+      if: steps.check-service.outputs.exists == 'true'
+      run: |
+        if [ -d "${{ matrix.service }}/tests" ]; then
+          cd ${{ matrix.service }}
+          python -m pytest tests/ -v --cov=. --cov-report=xml --cov-report=term-missing || true
+        else
+          echo "No tests found for ${{ matrix.service }}"
+        fi
+    
+    - name: Upload coverage to Codecov
+      if: steps.check-service.outputs.exists == 'true'
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./${{ matrix.service }}/coverage.xml
+        flags: ${{ matrix.service }}
+        name: ${{ matrix.service }}-coverage
+
+  dependency-check:
+    name: Dependency Security Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4  
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install safety
+      run: pip install safety
+    
+    - name: Check dependencies for security issues
+      run: |
+        for service in agentQ managerQ VectorStoreQ KnowledgeGraphQ QuantumPulse AuthQ; do
+          if [ -f $service/requirements.txt ]; then
+            echo "Checking $service dependencies..."
+            safety check -r $service/requirements.txt --json --output $service-safety.json || true
+          fi
+        done
+    
+    - name: Upload dependency scan results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: dependency-scan-results
+        path: "*-safety.json"
+
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [code-quality, test]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    strategy:
+      matrix:
+        service: [agentQ, managerQ, VectorStoreQ, KnowledgeGraphQ, QuantumPulse, AuthQ]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Check if Dockerfile exists
+      id: check-dockerfile
+      run: |
+        if [ -f "${{ matrix.service }}/Dockerfile" ]; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Build Docker image
+      if: steps.check-dockerfile.outputs.exists == 'true'
+      uses: docker/build-push-action@v5
+      with:
+        context: ${{ matrix.service }}/
+        push: false
+        tags: q2/${{ matrix.service }}:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Run integration tests
+      run: |
+        if [ -f tests/integration/requirements.txt ]; then
+          pip install -r tests/integration/requirements.txt
+          cd tests/integration
+          docker-compose -f docker-compose.integration.yml up -d
+          sleep 30  # Wait for services to start
+          python -m pytest . -v --tb=short
+          docker-compose -f docker-compose.integration.yml down
+        else
+          echo "No integration tests configured"
+        fi
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [integration-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: |
+          Automated release from main branch
+          
+          Changes in this release:
+          ${{ github.event.head_commit.message }}
+        draft: false
+        prerelease: false
