@@ -6,7 +6,8 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Optional, Union
 from dataclasses import dataclass
-from pydantic import BaseSettings, Field, validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
+from pydantic_settings import BaseSettings
 
 
 class ConfigError(Exception):
@@ -109,18 +110,16 @@ class BaseConfig(BaseSettings, ABC):
     # Service URLs (for inter-service communication)
     services: Dict[str, str] = Field(default_factory=dict)
     
-    class Config:
-        """Pydantic configuration."""
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
-        allow_population_by_field_name = True
-        
-        # Support for nested configuration via environment variables
-        # e.g., DATABASE__HOST=localhost sets database.host
-        env_nested_delimiter = "__"
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        validate_by_name=True,
+        env_nested_delimiter="__"
+    )
     
-    @validator('environment')
+    @field_validator('environment')
+    @classmethod
     def validate_environment(cls, v):
         """Validate environment value."""
         valid_envs = ['development', 'testing', 'staging', 'production']
@@ -128,13 +127,14 @@ class BaseConfig(BaseSettings, ABC):
             raise ValueError(f'Environment must be one of: {valid_envs}')
         return v
     
-    @validator('observability', pre=True, always=True)
-    def set_service_name_in_observability(cls, v, values):
+    @field_validator('observability', mode='before')
+    @classmethod
+    def set_service_name_in_observability(cls, v, info):
         """Set service name in observability config."""
         if isinstance(v, dict):
             v = ObservabilityConfig(**v)
-        if not v.service_name and 'service_name' in values:
-            v.service_name = values['service_name']
+        if not v.service_name and 'service_name' in info.data:
+            v.service_name = info.data['service_name']
         return v
     
     def is_production(self) -> bool:
