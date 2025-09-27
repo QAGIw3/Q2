@@ -77,7 +77,7 @@ def close_pulsar_producers():
             pass # Ignore errors on close
     if _client:
         try:
-        _client.close()
+            _client.close()
         except Exception:
             pass # Ignore errors on close
     _producers = {}

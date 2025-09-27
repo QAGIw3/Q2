@@ -14,7 +14,7 @@ def poll_for_workflow(manager_url: str, workflow_id: str, timeout: int = 120) ->
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
-            response = requests.get(f"{manager_url}/v1/workflows/{workflow_id}")
+            response = requests.get(f"{manager_url}/v1/workflows/{workflow_id}", timeout=10)
             if response.status_code == 200:
                 workflow = response.json()
                 if workflow['status'] in ['COMPLETED', 'FAILED']:
@@ -31,7 +31,7 @@ def get_workflow_by_event(manager_url: str, event_id: str, timeout: int = 30) ->
     start_time = time.time()
     while time.time() - start_time < timeout:
         try:
-            response = requests.get(f"{manager_url}/v1/workflows/by_event/{event_id}")
+            response = requests.get(f"{manager_url}/v1/workflows/by_event/{event_id}", timeout=10)
             if response.status_code == 200:
                 logger.info(f"Found workflow for event '{event_id}'.")
                 return response.json()
@@ -44,7 +44,7 @@ def get_workflow_by_event(manager_url: str, event_id: str, timeout: int = 30) ->
 def get_workflow_history(manager_url: str, workflow_id: str) -> list:
     """Fetches the history of a workflow."""
     try:
-        response = requests.get(f"{manager_url}/v1/workflows/{workflow_id}/history")
+        response = requests.get(f"{manager_url}/v1/workflows/{workflow_id}/history", timeout=10)
         response.raise_for_status()
         return response.json()
     except requests.RequestException as e:
@@ -56,7 +56,7 @@ def query_knowledge_graph(gremlin_query: str) -> list:
     try:
         # Assuming KnowledgeGraphQ is running on the default port
         url = "http://localhost:8182/" 
-        response = requests.post(url, json={"gremlin": gremlin_query})
+        response = requests.post(url, json={"gremlin": gremlin_query}, timeout=30)
         response.raise_for_status()
         return response.json().get("result", {}).get("data", [])
     except requests.RequestException as e:

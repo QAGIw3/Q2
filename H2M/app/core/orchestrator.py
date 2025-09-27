@@ -31,7 +31,7 @@ System: You are a helpful and professional AI assistant. Answer the user's quest
 User: {{ user_query }}
 Assistant:
 """
-jinja_env = Environment()
+jinja_env = Environment(autoescape=True)
 prompt_template = jinja_env.from_string(PROMPT_TEMPLATE)
 
 

@@ -20,9 +20,13 @@ duckdb==0.10.0
 elasticsearch==8.11.0
 pymilvus==2.4.1
 
-# --- Auth ---
+# --- Auth & Security ---
 python-keycloak-client==0.2.3
 python-jose==3.3.0
+pyjwt==2.8.0
+bcrypt==4.1.2
+cryptography==42.0.4
+hvac==2.1.0
 
 # --- HTTP & Tooling ---
 httpx==0.27.0
@@ -59,6 +63,10 @@ emails==0.6
 # --- Testing ---
 pytest==8.0.0
 pytest-mock==3.12.0
+
+# --- Security Tools ---
+bandit==1.8.6
+safety==3.6.2
 
 # --- Stream Processing ---
 # apache-flink==1.18.1 # This will be installed separately 

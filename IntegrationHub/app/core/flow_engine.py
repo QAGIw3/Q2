@@ -7,7 +7,7 @@ from jinja2 import Environment
 class FlowEngine:
     def __init__(self):
         self.flows_dir = os.path.join(os.path.dirname(__file__), '..', 'flows')
-        self.jinja_env = Environment()
+        self.jinja_env = Environment(autoescape=True)
         self.vault_client = VaultClient() # This should be a singleton in a real app
 
     async def trigger_flow(self, flow_id: str, trigger_event: dict):

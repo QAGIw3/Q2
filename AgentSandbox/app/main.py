@@ -24,7 +24,7 @@ logger = structlog.get_logger("agentsandbox")
 app = FastAPI(title="Agent Sandbox", version="0.1.0")
 setup_metrics(app, app_name="AgentSandbox")
 app.include_router(sandbox_api_router, prefix="/api/v1", tags=["Sandbox"])
-jinja_env = Environment(loader=FileSystemLoader('scenarios/'))
+jinja_env = Environment(loader=FileSystemLoader('scenarios/'), autoescape=True)
 
 # In-memory storage for simulation results
 simulations: Dict[str, Dict[str, Any]] = {}

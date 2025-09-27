@@ -102,7 +102,7 @@ class BaseConfig(BaseSettings, ABC):
     vault: VaultConfig = Field(default_factory=VaultConfig)
     
     # API Configuration (common to most services)
-    api_host: str = Field(default="0.0.0.0", description="API host")
+    api_host: str = Field(default="127.0.0.1", description="API host - use 0.0.0.0 only in production")
     api_port: int = Field(default=8000, description="API port")
     api_prefix: str = Field(default="/api/v1", description="API path prefix")
     cors_origins: list = Field(default=["*"], description="CORS allowed origins")
