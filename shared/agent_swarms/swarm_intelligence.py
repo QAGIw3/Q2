@@ -129,7 +129,7 @@ class QuantumAgent:
     def _initialize_quantum_state(self) -> Dict[str, Any]:
         """Initialize quantum state representation"""
         return {
-            "superposition_states": np.random.uniform(-1, 1, 4),
+            "superposition_states": np.random.uniform(-1, 1, len(self.state.position)),
             "entanglement_partners": [],
             "measurement_history": [],
             "coherence_time": 100  # Time steps before decoherence

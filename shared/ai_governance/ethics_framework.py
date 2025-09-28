@@ -740,8 +740,9 @@ class AIGovernanceFramework:
             
             # Stage 1: Bias Detection
             if predictions is not None and protected_attributes is not None:
+                truth_values = ground_truth if ground_truth is not None else np.zeros_like(predictions)
                 bias_results = await self.bias_detector.detect_bias(
-                    model_id, predictions, ground_truth or np.zeros_like(predictions),
+                    model_id, predictions, truth_values,
                     protected_attributes
                 )
                 review_data["bias_results"] = bias_results
