@@ -1,10 +1,33 @@
-# Q Platform Overview
+# Q2 Platform Overview
 
-The Q Platform is a distributed, highly-adaptive, and privacy-conscious AI ecosystem for real-time, multi-agent inference, decision-making, and collaborative learning. It aims to bridge human intent, LLMs, quantum optimization, and swarm intelligence at any scale.
+The Q2 Platform is the world's most advanced quantum-enhanced AI infrastructure, delivering unprecedented performance through quantum computing integration, enterprise-grade governance, and self-organizing agent swarms. It provides a comprehensive ecosystem for AI development and deployment at enterprise scale.
 
-## Core Components
+## Core Architecture
 
-- **H2M – Human-to-LLM Translator:** The gateway for translating human intent to optimized LLM prompts.
-- **QuantumPulse:** The distributed, real-time LLM inference and messaging platform, built on Apache Pulsar.
-- **agentQ (QuantumPulse Agent):** An autonomous, quantum-optimized inference and decision engine.
-- **managerQ (QuantumPulse Manager):** The orchestrator and swarm intelligence manager for distributed agents.
+### Service Layer
+- **agentQ**: Core reasoning engine and autonomous agent
+- **managerQ**: Service orchestration and task management  
+- **VectorStoreQ**: Vector database service for embeddings
+- **KnowledgeGraphQ**: Knowledge graph service with JanusGraph
+- **QuantumPulse**: Quantum AI computation engine
+- **AuthQ**: Security and identity management
+- **H2M**: Human-machine interface and conversation orchestrator
+- **WebAppQ**: React web application frontend
+- **AgentSandbox**: Secure code execution environment
+- **UserProfileQ**: User profile and preference management
+
+### Infrastructure Layer
+- **Apache Pulsar**: Real-time messaging and event streaming
+- **Istio Service Mesh**: Zero-trust security and load balancing
+- **Keycloak**: Identity and access management
+- **JanusGraph**: Distributed graph database
+- **Vector Database**: High-dimensional embedding storage
+- **Kubernetes**: Container orchestration platform
+
+## Key Capabilities
+
+- **Quantum Machine Learning**: Advanced quantum algorithms for ML acceleration
+- **Real-Time Analytics**: Quantum-enhanced data processing and insights  
+- **AI Governance**: Enterprise compliance and ethical AI frameworks
+- **Agent Swarms**: Self-organizing multi-agent coordination
+- **Multi-Tenant Security**: Zero-trust architecture with complete isolation
