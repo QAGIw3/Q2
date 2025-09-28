@@ -1,52 +1,81 @@
-# 🚀 VectorStoreQ - Centralized Vector Database Service
+# VectorStoreQ Service
 
 ## Overview
 
-VectorStoreQ is the centralized, managed vector database service for the Q Platform. It provides a robust, scalable, and secure API for ingesting and searching the high-dimensional embeddings that power Retrieval-Augmented Generation (RAG), semantic search, and other AI-native capabilities across the platform.
+VectorStoreQ is the centralized vector database service for the Q2 Platform. It provides a robust, scalable, and secure API for ingesting and searching high-dimensional embeddings that power Retrieval-Augmented Generation (RAG), semantic search, and other AI capabilities across the platform.
 
-By centralizing access through a dedicated service, we abstract away the underlying database technology (Milvus), enforce a consistent API contract, and manage concerns like scalability, security, and collection management in one place.
-
----
+**Service Type:** Data Storage Service  
+**Port:** 8002  
+**API Documentation:** http://localhost:8002/docs  
 
 ## Architecture
 
-The `VectorStoreQ` ecosystem consists of two main components:
+### Core Components
+1. **VectorStoreQ Service**: FastAPI microservice managing Milvus database access
+2. **q_vectorstore_client Library**: Shared Python client library for service integration
 
-1.  **`VectorStoreQ` Service**: A FastAPI microservice that acts as the sole gatekeeper to the Milvus database cluster. It manages connections, handles data validation, and exposes high-level endpoints for search and ingestion.
-2.  **`q_vectorstore_client` Library**: A shared Python library located in `shared/q_vectorstore_client`. All other services in the Q Platform **must** use this client to interact with `VectorStoreQ`. This ensures consistency, type safety, and simplifies service-to-service communication.
+### Key Features
+- ✅ Centralized vector database management with Milvus backend
+- ✅ High-performance semantic search and similarity matching
+- ✅ Scalable ingestion pipeline for embeddings
+- ✅ Multi-collection support for data organization
+- ✅ RESTful API with comprehensive validation
+- ✅ Shared client library for consistent integration
+- ✅ Health monitoring and readiness checks
+- ✅ Docker containerization and Kubernetes ready
 
-This architecture prevents other services from needing to know the details of the Milvus implementation, such as its connection details or the `pymilvus` SDK.
+### Dependencies
+- **External Services:** Milvus cluster
+- **Infrastructure:** Apache Pulsar (optional for events)
 
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
+- Python 3.11+
+- Running Milvus cluster (use Milvus Lite for development)
+- Docker (for containerized deployment)
 
-*   Python 3.9+
-*   An running Milvus cluster. For local development, you can use the [Milvus Lite Docker container](https://milvus.io/docs/install_standalone-docker.md).
-*   Docker (for running the service as a container).
+### Quick Start
 
-### 1. Installation
+1. **Install dependencies:**
+   ```bash
+   pip install -r VectorStoreQ/requirements.txt
+   ```
 
-It is recommended to use a virtual environment. The dependencies for the service and the client are separate.
+2. **Install client library (for integration):**
+   ```bash
+   # For other services to use the client
+   pip install -e ./shared/q_vectorstore_client
+   ```
+
+3. **Configure environment:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with Milvus connection details
+   ```
+
+4. **Run the service:**
+   ```bash
+   python -m vectorstoreq.app.main
+   ```
+
+5. **Verify it's running:**
+   ```bash
+   curl http://localhost:8002/health
+   ```
+
+### Docker Deployment
 
 ```bash
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate
+# Build the image
+docker build -t q2/vectorstoreq:latest VectorStoreQ/
 
-# Install dependencies for the VectorStoreQ service
-pip install -r VectorStoreQ/requirements.txt
+# Run the container
+docker run -p 8002:8002 \
+  -e MILVUS_HOST=milvus-server \
+  -e MILVUS_PORT=19530 \
+  q2/vectorstoreq:latest
 ```
-
-To use the client in another service (e.g., `H2M`), you would typically install it in editable mode:
-```bash
-# From the root of the Q project
-pip install -e ./shared/q_vectorstore_client
-```
-
-### 2. Configuration
 
 The service is configured via `VectorStoreQ/config/vectorstore.yaml`. Ensure the `milvus` host and port point to your running cluster.
 

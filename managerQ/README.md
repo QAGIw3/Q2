@@ -1,18 +1,29 @@
-# 🧠 managerQ
+# managerQ Service
 
 ## Overview
 
-`managerQ` is the control plane for the Q Platform's multi-agent system. It acts as a centralized dispatcher and coordinator, making the pool of autonomous `agentQ` workers a usable and scalable resource for the rest of the platform.
+managerQ is the control plane for the Q2 Platform's multi-agent system. It acts as a centralized dispatcher and coordinator, making the pool of autonomous agentQ workers a usable and scalable resource for the rest of the platform.
 
-Its core responsibilities are:
--   **Agent Discovery**: Maintaining a real-time registry of all active and available `agentQ` instances.
--   **Task Dispatching**: Providing a single, unified API for other services to submit tasks to the agent pool.
--   **Load Balancing**: Distributing incoming tasks across available agents with the correct `personality`.
--   **Result Correlation**: Listening for results from agents and correlating them back to the original request.
+**Service Type:** Orchestration Service  
+**Port:** 8001  
+**API Documentation:** http://localhost:8001/docs  
 
 ## Architecture
 
-`managerQ` is a FastAPI service that uses several background threads to manage its state and communicate over Pulsar.
+### Core Responsibilities
+- **Agent Discovery**: Maintaining a real-time registry of all active and available agentQ instances
+- **Task Dispatching**: Providing a unified API for other services to submit tasks to the agent pool
+- **Load Balancing**: Distributing incoming tasks across available agents with the correct personality
+- **Result Correlation**: Listening for results from agents and correlating them back to original requests
+
+### Key Features
+- ✅ Real-time agent registry management
+- ✅ Intelligent task dispatching and load balancing
+- ✅ FastAPI service with background thread coordination
+- ✅ Apache Pulsar integration for messaging
+- ✅ Result correlation with asyncio event handling
+- ✅ Multi-personality agent support
+- ✅ Health monitoring and readiness checks
 
 1.  **`AgentRegistry`**: A background thread consumes from the `q.agentq.registrations` topic. When an `agentQ` instance starts, it publishes a registration message. The registry adds it to an in-memory list of active agents.
 

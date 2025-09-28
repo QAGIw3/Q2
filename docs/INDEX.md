@@ -10,7 +10,7 @@ Welcome to the Q2 Platform documentation hub. This index provides links to all d
 - **[Implementation Summary](../IMPLEMENTATION_SUMMARY.md)** - Comprehensive feature overview
 
 ### Installation & Setup
-- **[Developer Guide - Setup](../DEVELOPER_GUIDE.md#-quick-setup)** - Development environment setup
+- **[Developer Guide - Setup](../DEVELOPER_GUIDE.md#quick-setup)** - Development environment setup
 - **[Makefile Commands](../README.md#development--operations)** - Available development commands
 - **Environment Configuration** - See individual service documentation
 
@@ -60,9 +60,9 @@ Welcome to the Q2 Platform documentation hub. This index provides links to all d
 - **[Troubleshooting Template](../templates/docs/TROUBLESHOOTING_TEMPLATE.md)** - Operational documentation
 
 ### Development Tools
-- **[Development Setup](../DEVELOPER_GUIDE.md#-development-workflow)** - Development workflow and commands
+- **[Development Setup](../DEVELOPER_GUIDE.md#development-workflow)** - Development workflow and commands
 - **[Testing Guide](../README.md#development--operations)** - Testing procedures
-- **[Code Quality](../DEVELOPER_GUIDE.md#-tips-and-best-practices)** - Coding standards and best practices
+- **[Code Quality](../DEVELOPER_GUIDE.md#tips-and-best-practices)** - Coding standards and best practices
 
 ### Infrastructure
 - **[Infrastructure Documentation](../infra/terraform/README.md)** - Terraform infrastructure as code
