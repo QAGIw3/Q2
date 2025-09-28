@@ -201,7 +201,14 @@ class QuantumNeuralArchitectureSearch:
             architecture_type = arch_choices[arch_idx]
             
             # Generate quantum circuit structure
-            num_qubits = np.random.choice(range(4, 33), p=search_task.quantum_state["qubit_superposition"][:29])
+            qubit_range = search_task.search_space.get("qubits", (4, 32))
+            available_qubits = min(29, qubit_range[1])
+            qubit_probs = search_task.quantum_state["qubit_superposition"][:available_qubits]
+            if len(qubit_probs) > 0:
+                qubit_probs = qubit_probs / np.sum(qubit_probs)  # Normalize
+                num_qubits = np.random.choice(range(qubit_range[0], available_qubits + 1), p=qubit_probs[:available_qubits - qubit_range[0] + 1])
+            else:
+                num_qubits = np.random.randint(qubit_range[0], qubit_range[1] + 1)
             circuit_depth = np.random.randint(2, 10)
             
             # Generate quantum layers

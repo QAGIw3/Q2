@@ -21,6 +21,7 @@ This document provides a comprehensive summary of all major features and capabil
 - ✅ Quantum Support Vector Machines (QSVMs) with quantum kernels
 - ✅ Quantum-Classical Transfer Learning hybrid architectures
 - ✅ Quantum K-Nearest Neighbors with quantum distance metrics
+- ✅ Quantum Neural Architecture Search (QNAS) with superposition optimization
 
 **Key Features**:
 - 🔬 Quantum feature maps with angle encoding
