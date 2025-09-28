@@ -3,14 +3,32 @@
 **Date:** {DATE}  
 **Status:** {STATUS} <!-- Proposed, Accepted, Superseded, Deprecated -->  
 **Deciders:** {DECIDERS}  
+**Tags:** {TAGS} <!-- e.g., architecture, security, performance -->
 
 ## Context
 
 {CONTEXT_DESCRIPTION}
 
+### Problem Statement
+{PROBLEM_DESCRIPTION}
+
+### Constraints
+- {CONSTRAINT_1}
+- {CONSTRAINT_2}
+- {CONSTRAINT_3}
+
+### Assumptions
+- {ASSUMPTION_1}
+- {ASSUMPTION_2}
+
 ## Decision
 
 {DECISION_DESCRIPTION}
+
+### Decision Criteria
+- {CRITERIA_1}
+- {CRITERIA_2}
+- {CRITERIA_3}
 
 ## Rationale
 
@@ -30,14 +48,25 @@
    - Cons: {CONS}
    - Why rejected: {REJECTION_REASON}
 
+3. **{ALTERNATIVE_3}**
+   - Pros: {PROS}
+   - Cons: {CONS}
+   - Why rejected: {REJECTION_REASON}
+
 ## Consequences
 
 ### Positive:
 - {POSITIVE_CONSEQUENCE_1}
 - {POSITIVE_CONSEQUENCE_2}
+- {POSITIVE_CONSEQUENCE_3}
 
 ### Negative:
 - {NEGATIVE_CONSEQUENCE_1}
+- {NEGATIVE_CONSEQUENCE_2}
+
+### Neutral:
+- {NEUTRAL_CONSEQUENCE_1}
+- {NEUTRAL_CONSEQUENCE_2}
 - {NEGATIVE_CONSEQUENCE_2}
 
 ### Neutral:

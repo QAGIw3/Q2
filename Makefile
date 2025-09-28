@@ -142,6 +142,10 @@ docs-clean: ## Clean generated documentation
 	@echo "Cleaning generated documentation..."
 	@rm -rf docs/api/
 
+docs-validate: ## Validate documentation quality and consistency
+	@echo "Validating documentation..."
+	@python3 scripts/validate-docs.py
+
 ##@ Development Tools
 
 scaffold-service: ## Create a new service (usage: make scaffold-service SERVICE=MyNewService)
