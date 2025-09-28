@@ -1,17 +1,20 @@
-import logging
-from fastapi import APIRouter, Depends, HTTPException, status
-from openai import OpenAI
-from fastapi.responses import StreamingResponse
 import json
-import uuid
-import time
-
-from app.models.chat import ChatRequest, ChatResponse, ChatChoice, ChatMessage, ChatUsage
-from shared.q_auth_parser.parser import get_current_user
-from shared.q_auth_parser.models import UserClaims
-from app.core.model_manager import model_manager
-from shared.q_h2m_client.client import h2m_client
+import logging
 import random
+import time
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
+from openai import OpenAI
+
+from shared.q_auth_parser.models import UserClaims
+from shared.q_auth_parser.parser import get_current_user
+from shared.q_h2m_client.client import h2m_client
+from shared.vault_client import VaultClient
+
+from ...core.model_manager import model_manager
+from ...models.chat import ChatChoice, ChatMessage, ChatRequest, ChatResponse, ChatUsage
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -21,6 +24,7 @@ router = APIRouter()
 # The client is initialized upon first request to this endpoint.
 # This avoids trying to connect to Vault/OpenAI at application startup.
 client: OpenAI | None = None
+
 
 def get_openai_client():
     """FastAPI dependency to initialize and get the OpenAI client."""
@@ -52,11 +56,9 @@ async def sse_generator(openai_stream):
         error_payload = {"error": "An error occurred while streaming."}
         yield f"data: {json.dumps(error_payload)}\n\n"
 
+
 @router.post("/completions", response_model=ChatResponse, status_code=status.HTTP_200_OK)
-async def create_chat_completion(
-    request: ChatRequest,
-    user: UserClaims = Depends(get_current_user)
-):
+async def create_chat_completion(request: ChatRequest, user: UserClaims = Depends(get_current_user)):
     """
     Provides a synchronous, request/response endpoint for chat completions.
     This acts as a centralized gateway to locally hosted, fine-tuned models.
@@ -67,14 +69,14 @@ async def create_chat_completion(
     try:
         # 1. Get active models from the registry
         active_models = await h2m_client.get_active_models(base_model=request.model)
-        
+
         if not active_models:
             # Fallback to the base model if no active fine-tuned models are found
             selected_model_name = request.model
         else:
             # 2. A/B Testing: Simple random choice for now
-            selected_model_name = random.choice([m['metadata']['model_name'] for m in active_models])
-        
+            selected_model_name = random.choice([m["metadata"]["model_name"] for m in active_models])
+
         logger.info(f"Routing request to model: '{selected_model_name}'")
 
         # 3. Get the model and tokenizer from the manager
@@ -89,7 +91,7 @@ async def create_chat_completion(
         inputs = tokenizer(request.messages[-1].content, return_tensors="pt")
         outputs = model.generate(**inputs, max_new_tokens=request.max_tokens)
         completion_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        
+
         # 5. Format the response to match the expected ChatResponse model
         response = ChatResponse(
             id=f"cmpl-{uuid.uuid4()}",
@@ -98,18 +100,16 @@ async def create_chat_completion(
             model=selected_model_name,
             choices=[
                 ChatChoice(
-                    index=0,
-                    message=ChatMessage(role="assistant", content=completion_text),
-                    finish_reason="stop"
+                    index=0, message=ChatMessage(role="assistant", content=completion_text), finish_reason="stop"
                 )
             ],
             usage=ChatUsage(
                 prompt_tokens=len(inputs.input_ids[0]),
                 completion_tokens=len(outputs[0]),
-                total_tokens=len(inputs.input_ids[0]) + len(outputs[0])
-            )
+                total_tokens=len(inputs.input_ids[0]) + len(outputs[0]),
+            ),
         )
-        
+
         logger.info(f"Successfully generated chat completion from model '{selected_model_name}'.")
         return response
 
@@ -117,5 +117,5 @@ async def create_chat_completion(
         logger.error(f"Error during local model inference: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"An unexpected error occurred during inference: {e}"
-        ) 
+            detail=f"An unexpected error occurred during inference: {e}",
+        )

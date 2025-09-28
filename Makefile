@@ -192,6 +192,32 @@ serve-agentq: ## Start agentQ development server
 serve-managerq: ## Start managerQ development server
 	cd managerQ && python -m managerQ.app.main
 
+serve-managerq-offline: ## Start managerQ in offline mode (no Ignite/Pulsar) for rapid dev
+	cd managerQ && MANAGERQ_OFFLINE=1 MANAGERQ_SKIP_VAULT=1 python -m managerQ.app.main
+
+serve-quantumpulse: ## Start QuantumPulse development server (Vault optional w/ fallback)
+	cd QuantumPulse && QUANTUMPULSE_SKIP_VAULT=1 python -m app.main
+
+serve-platform: ## Start core platform services with local config fallbacks
+	@echo "Starting QuantumPulse (background)..."; \
+	( cd QuantumPulse && QUANTUMPULSE_SKIP_VAULT=1 nohup python -m app.main > ../quantumpulse.dev.log 2>&1 & echo $$! > ../quantumpulse.pid ); \
+	sleep 2; \
+	echo "Starting ManagerQ (background)..."; \
+	( cd managerQ && MANAGERQ_SKIP_VAULT=1 nohup python -m managerQ.app.main > ../managerq.dev.log 2>&1 & echo $$! > ../managerq.pid ); \
+	echo "Services started. Logs: quantumpulse.dev.log, managerq.dev.log"
+
+serve-platform-offline: ## Start QuantumPulse (local config) + ManagerQ offline (no Ignite/Pulsar)
+	@echo "Starting QuantumPulse (background)..."; \
+	( cd QuantumPulse && QUANTUMPULSE_SKIP_VAULT=1 nohup python -m app.main > ../quantumpulse.dev.log 2>&1 & echo $$! > ../quantumpulse.pid ); \
+	sleep 2; \
+	echo "Starting ManagerQ OFFLINE (background)..."; \
+	( cd managerQ && MANAGERQ_OFFLINE=1 MANAGERQ_SKIP_VAULT=1 nohup python -m managerQ.app.main > ../managerq.dev.log 2>&1 & echo $$! > ../managerq.pid ); \
+	echo "Offline services started. Logs: quantumpulse.dev.log, managerq.dev.log"
+
+stop-platform: ## Stop background platform services started via serve-platform
+	@if [ -f quantumpulse.pid ]; then kill -TERM `cat quantumpulse.pid` 2>/dev/null || true; rm quantumpulse.pid; echo "Stopped QuantumPulse"; fi
+	@if [ -f managerq.pid ]; then kill -TERM `cat managerq.pid` 2>/dev/null || true; rm managerq.pid; echo "Stopped ManagerQ"; fi
+
 # Utility targets
 check-deps: ## Check for missing dependencies
 	@echo "Checking for missing Python dependencies..."

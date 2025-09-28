@@ -32,7 +32,9 @@ matplotlib
 # --- Tooling & Linters ---
 kubernetes
 flake8
-semgrep
+# semgrep (removed from default env due to ruamel.yaml<0.18 vs apache-flink>=0.18.4 conflict)
+# Install separately if needed for static analysis:
+#   pipx install semgrep   OR   pip install semgrep --user
 watchfiles
 
 # Quantum Computing Libraries

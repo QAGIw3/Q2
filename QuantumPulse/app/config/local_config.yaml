@@ -1,0 +1,28 @@
+service_name: quantumpulse
+version: "0.1.0"
+pulsar:
+  service_url: "pulsar://localhost:6650"
+  topics:
+    requests: "persistent://public/default/qp-requests"
+    preprocessed: "persistent://public/default/qp-preprocessed"
+    routed_prefix: "persistent://public/default/qp-routed"
+    results: "persistent://public/default/qp-results"
+    feedback: "persistent://public/default/qp-feedback"
+    analytics: "persistent://public/default/qp-analytics"
+    model_updates: "persistent://public/default/qp-model-updates"
+api:
+  host: "0.0.0.0"
+  port: 8010
+ignite:
+  addresses: ["localhost:10800"]
+  cluster_name: "dev-cluster"
+  cache_name: "model-cache"
+models:
+  - name: "base-embeddings"
+    shards: ["shard-a"]
+flink:
+  rest_url: "http://localhost:8081"
+  prompt_optimizer_jar_path: "/opt/flink/jars/prompt_optimizer.jar"
+  dynamic_router_jar_path: "/opt/flink/jars/dynamic_router.jar"
+otel:
+  enabled: false

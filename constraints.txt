@@ -54,11 +54,23 @@ prometheus-client==0.20.0
 PyGithub==2.3.0
 kubernetes==29.0.0
 flake8==7.0.0
-semgrep==1.62.0
 watchfiles==0.21.0
 zulip==0.8.2
 zulip_bots==0.8.2
 emails==0.6
+
+# NOTE: semgrep was removed from the shared constraints because its current
+# dependency pin (ruamel.yaml <0.18) conflicts with apache-flink (ruamel.yaml >=0.18.4).
+# To use semgrep, install it in an isolated virtualenv or via pipx:
+#   pipx install semgrep
+# or
+#   pip install semgrep --constraint <custom_constraints_without_flink>
+# This avoids forcing a downgrade of ruamel.yaml that breaks flink components.
+
+# --- gRPC Compatibility ---
+# pymilvus currently requires grpcio <=1.60.0 while other packages may pull newer.
+# Pin to a compatible version to avoid resolver warnings.
+grpcio==1.60.0
 
 # --- Testing ---
 pytest>=7.0.0
@@ -67,6 +79,7 @@ pytest-mock==3.12.0
 # --- Security Tools ---
 bandit==1.8.6
 safety==3.6.2
+pbr==6.0.0  # required by bandit runtime in pre-commit
 
 # --- Stream Processing ---
-# apache-flink==1.18.1 # This will be installed separately 
+# apache-flink==1.18.1 # This will be installed separately
