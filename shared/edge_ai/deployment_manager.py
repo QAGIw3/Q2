@@ -21,7 +21,11 @@ import json
 import numpy as np
 from collections import defaultdict, deque
 import hashlib
-import aiohttp
+# Optional HTTP client - would be installed when needed for actual deployments
+try:
+    import aiohttp
+except ImportError:
+    aiohttp = None
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)

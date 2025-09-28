@@ -21,8 +21,9 @@ import uuid
 import json
 import numpy as np
 from collections import defaultdict, deque
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Visualization imports would be added when needed
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
