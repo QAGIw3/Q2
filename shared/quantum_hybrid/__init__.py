@@ -1,16 +1,27 @@
 """
-Quantum-Classical Hybrid Optimizer for Q2 Platform
+Quantum-Classical Hybrid Computing Module for Q2 Platform v2.0.0
 
-This module provides cutting-edge quantum-classical hybrid computing capabilities:
-- Quantum-classical hybrid optimization algorithms
-- Variational quantum eigensolvers (VQE) and algorithms  
-- Quantum approximate optimization algorithm (QAOA)
-- Hybrid neural-quantum networks
-- Quantum advantage detection and routing
+Advanced quantum computing capabilities integrated with classical systems:
+- Quantum Machine Learning Pipeline (QVNNs, QRL, QGANs)
+- Quantum-Classical Hybrid Optimization Algorithms
+- Variational quantum eigensolvers (VQE) and QAOA
+- Quantum advantage detection and benchmarking
 - Classical-quantum resource management
 """
 
 from .hybrid_optimizer import *
+from .quantum_ml_pipeline import (
+    quantum_ml_pipeline, 
+    QuantumMLAlgorithm, 
+    QuantumMLPipeline,
+    QuantumVariationalNeuralNetwork,
+    QuantumReinforcementLearning,
+    QuantumGenerativeAdversarialNetwork,
+    QuantumFeatureMap
+)
+
+__version__ = "2.0.0"
+__author__ = "Q2 Platform Team - 254STUDIOZ"
 
 __all__ = [
     # Hybrid Optimizer
@@ -22,4 +33,13 @@ __all__ = [
     "ClassicalBackend",
     "QuantumResource",
     "ClassicalResource",
+    
+    # Quantum ML Pipeline
+    "quantum_ml_pipeline",
+    "QuantumMLAlgorithm", 
+    "QuantumMLPipeline",
+    "QuantumVariationalNeuralNetwork",
+    "QuantumReinforcementLearning", 
+    "QuantumGenerativeAdversarialNetwork",
+    "QuantumFeatureMap"
 ]
