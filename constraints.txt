@@ -96,5 +96,8 @@ langchain==0.1.16
 opentelemetry-instrumentation-httpx==0.42b0
 opentelemetry-exporter-otlp-proto-grpc==1.24.0
 
+# --- Python Utilities ---
+typing-extensions==4.10.0
+
 # --- Stream Processing ---
 # apache-flink==1.18.1 # This will be installed separately

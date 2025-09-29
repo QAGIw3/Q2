@@ -83,6 +83,9 @@ dependencies = [
     # gRPC Compatibility
     "grpcio==1.60.0",
     
+    # Python Type Extensions
+    "typing-extensions==4.10.0",
+    
     # Shared Libraries - Platform specific packages (installed in editable mode during development)
     # These are commented out as they should be installed via -e flag during development
     # "q_messaging_schemas",
