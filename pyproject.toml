@@ -1,7 +1,20 @@
 # Q2 Platform Python Configuration
 
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "q2"
+version = "0.1.0"
+description = "Q2 platform core packages"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name="Q2"}]
+license = {text="Apache-2.0"}  # SPDX only; add full LICENSE separately.
+
 [tool.black]
-line-length = 120
+line-length = 100
 target-version = ['py311']
 include = '\.pyi?$'
 extend-exclude = '''
@@ -24,15 +37,20 @@ extend-exclude = '''
 
 [tool.isort]
 profile = "black"
-line_length = 120
+line_length = 100
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
 use_parentheses = true
 ensure_newline_before_comments = true
-known_first_party = ["agentQ", "managerQ", "shared", "vectorstoreq", "knowledgegraphq", "quantumpulse"]
+known_first_party = ["agentQ", "managerQ", "shared", "vectorstoreq", "knowledgegraphq", "quantumpulse", "q2", "services"]
 known_third_party = ["fastapi", "pulsar", "structlog", "opentelemetry", "pytest"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.ruff]
+line-length = 100
+select = ["E","F","I","N","UP","B","A","C90"]
+ignore = ["E501"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"
@@ -94,16 +112,12 @@ skips = ["B101", "B601"]
 
 [tool.mypy]
 python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false  # Set to true when ready for strict typing
-check_untyped_defs = true
-disallow_incomplete_defs = true
-warn_redundant_casts = true
 warn_unused_ignores = true
-show_error_codes = true
-namespace_packages = true
-explicit_package_bases = true
+warn_redundant_casts = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+strict_optional = true
 
 # Third-party libraries without type stubs
 [[tool.mypy.overrides]]

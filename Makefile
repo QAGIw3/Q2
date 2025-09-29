@@ -103,6 +103,53 @@ build-service: ## Build specific service (usage: make build-service SERVICE=agen
 		echo "Error: Dockerfile not found for $(SERVICE)"; \
 	fi
 
+##@ Q2 Compute Core Commands
+
+PY=python3
+
+q2-install: ## Install Q2 compute core dependencies
+	$(PY) -m pip install -U pip
+	$(PY) -m pip install -r requirements.txt
+
+q2-dev: ## Install Q2 compute core dev dependencies
+	$(PY) -m pip install -r requirements.txt -r requirements-dev.txt
+
+q2-fmt: ## Format Q2 compute core code
+	ruff check --fix q2 services
+	black q2 services --line-length=100
+	isort q2 services --profile=black --line-length=100
+
+q2-lint: ## Lint Q2 compute core code
+	ruff check q2 services
+	bandit -q -r q2 services
+
+q2-type: ## Type check Q2 compute core
+	mypy q2 services
+
+q2-test: ## Test Q2 compute core
+	pytest tests/test_device.py tests/test_qvnn.py -q
+
+q2-cov: ## Test Q2 compute core with coverage
+	pytest tests/test_device.py tests/test_qvnn.py --cov=q2 --cov=services --cov-report=term-missing
+
+q2-serve: ## Serve Q2 compute API
+	uvicorn services.compute_api.app:app --host 0.0.0.0 --port 8000
+
+q2-docker-build-cpu: ## Build Q2 CPU Docker image
+	docker build -f infra/docker/Dockerfile.cpu -t q2-cpu .
+
+q2-docker-run-cpu: ## Run Q2 CPU Docker container
+	docker run --rm -e Q2_DEVICE=cpu -p 8000:8000 q2-cpu
+
+q2-docker-build-gpu: ## Build Q2 GPU Docker image
+	docker build -f infra/docker/Dockerfile.gpu -t q2-gpu .
+
+q2-docker-run-gpu: ## Run Q2 GPU Docker container
+	docker run --rm --gpus all -e Q2_DEVICE=cuda -p 8000:8000 q2-gpu
+
+q2-openapi: ## Export Q2 OpenAPI spec
+	$(PY) scripts/export_openapi.py > openapi.json
+
 ##@ Cleanup Commands
 
 clean: ## Clean up build artifacts and caches
