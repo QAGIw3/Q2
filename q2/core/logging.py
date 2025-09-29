@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import sys
 import time
 import uuid
-from typing import Any, Mapping
+from collections.abc import Mapping
+from typing import Any
 
 
 class JsonFormatter(logging.Formatter):

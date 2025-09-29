@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from fastapi import APIRouter
-import torch
 
 from q2.compute.device import get_device
 from q2.compute.qvnn import fit_qvnn

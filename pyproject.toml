@@ -49,6 +49,8 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
 select = ["E","F","I","N","UP","B","A","C90"]
 ignore = ["E501"]
 

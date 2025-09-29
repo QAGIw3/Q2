@@ -1,0 +1,170 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Q2 Compute API",
+    "version": "v1"
+  },
+  "paths": {
+    "/v1/compute/qvnn/train": {
+      "post": {
+        "tags": [
+          "qvnn"
+        ],
+        "summary": "Train Qvnn",
+        "operationId": "train_qvnn_v1_compute_qvnn_train_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QvnnTrainRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QvnnTrainResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "QvnnTrainRequest": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "N",
+            "default": 4096
+          },
+          "in_dim": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "In Dim",
+            "default": 64
+          },
+          "hidden": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Hidden",
+            "default": 128
+          },
+          "out_dim": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Out Dim",
+            "default": 1
+          },
+          "steps": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Steps",
+            "default": 200
+          },
+          "lr": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Lr",
+            "default": 0.001
+          },
+          "amp": {
+            "type": "boolean",
+            "title": "Amp",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "QvnnTrainRequest"
+      },
+      "QvnnTrainResponse": {
+        "properties": {
+          "loss": {
+            "type": "number",
+            "title": "Loss"
+          },
+          "wall_time_ms": {
+            "type": "number",
+            "title": "Wall Time Ms"
+          },
+          "device": {
+            "type": "string",
+            "title": "Device"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loss",
+          "wall_time_ms",
+          "device"
+        ],
+        "title": "QvnnTrainResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

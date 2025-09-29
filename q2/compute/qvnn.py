@@ -16,7 +16,7 @@ class QVNN(nn.Module):
             nn.Linear(hidden, out_dim),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:  # type: ignore[override]
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
 
 
