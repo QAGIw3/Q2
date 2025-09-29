@@ -81,5 +81,20 @@ bandit==1.8.6
 safety==3.6.2
 pbr==6.0.0  # required by bandit runtime in pre-commit
 
+# --- Graph Databases ---
+gremlinpython==3.7.0
+
+# --- Scientific Computing & Graph Processing ---
+scipy==1.11.4
+scikit-learn==1.3.2
+networkx==3.2.1
+
+# --- AI/ML Additional Libraries ---
+langchain==0.1.16
+
+# --- Additional OpenTelemetry Components ---
+opentelemetry-instrumentation-httpx==0.42b0
+opentelemetry-exporter-otlp-proto-grpc==1.24.0
+
 # --- Stream Processing ---
 # apache-flink==1.18.1 # This will be installed separately

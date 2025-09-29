@@ -12,6 +12,146 @@ readme = "README.md"
 requires-python = ">=3.11"
 authors = [{name="Q2"}]
 license = {text="Apache-2.0"}  # SPDX only; add full LICENSE separately.
+dependencies = [
+    # Core API Framework
+    "fastapi==0.110.0",
+    "uvicorn[standard]==0.27.1",
+    "pydantic==2.6.4",
+    "pydantic-settings==2.2.1",
+    "python-multipart==0.0.9",
+    "websockets==12.0",
+    "werkzeug==3.0.1",
+    
+    # HTTP & Configuration
+    "httpx==0.27.0",
+    "python-dotenv==1.0.1",
+    "pyyaml==6.0.1",
+    "Jinja2==3.1.3",
+    "dpath==2.1.6",
+    
+    # Messaging & Stream Processing
+    "pulsar-client==3.5.0",
+    "fastavro==1.9.4",
+    
+    # Data Storage & Databases
+    "pyignite==0.5.2",
+    "cassandra-driver==3.28.0",
+    "duckdb==0.10.0",
+    "elasticsearch==8.11.0",
+    "pymilvus==2.4.1",
+    "gremlinpython==3.7.0",
+    
+    # Authentication & Security
+    "python-keycloak-client==0.2.3",
+    "python-jose==3.3.0",
+    "pyjwt==2.8.0",
+    "bcrypt==4.1.2",
+    "cryptography==42.0.4",
+    "hvac==2.1.0",
+    
+    # AI & Machine Learning
+    "sentence-transformers==2.5.1",
+    "torch==2.2.1",
+    "scikit-learn==1.3.2",
+    "scipy==1.11.4",
+    "networkx==3.2.1",
+    "matplotlib==3.8.3",
+    "openai==1.14.3",
+    "langchain==0.1.16",
+    
+    # Observability & Monitoring
+    "structlog==24.1.0",
+    "python-json-logger==2.0.7",
+    "opentelemetry-api==1.24.0",
+    "opentelemetry-sdk==1.24.0",
+    "opentelemetry-instrumentation-fastapi==0.45b0",
+    "opentelemetry-instrumentation-requests==0.45b0",
+    "opentelemetry-instrumentation-httpx==0.42b0",
+    "opentelemetry-exporter-otlp-proto-grpc==1.24.0",
+    "prometheus-client==0.20.0",
+    
+    # Infrastructure & DevOps
+    "kubernetes==29.0.0",
+    "PyGithub==2.3.0",
+    "watchfiles==0.21.0",
+    
+    # Communication & Notifications
+    "zulip==0.8.2",
+    "zulip_bots==0.8.2",
+    "emails==0.6",
+    
+    # gRPC Compatibility
+    "grpcio==1.60.0",
+    
+    # Shared Libraries - Platform specific packages (installed in editable mode during development)
+    # These are commented out as they should be installed via -e flag during development
+    # "q_messaging_schemas",
+    # "q_opentelemetry", 
+    # "q_vectorstore_client",
+    # "q_pulsar_client",
+    # "q_knowledgegraph_client",
+    # "q_memory_schemas",
+    # "q_pulse_client",
+    # "q_agentsandbox_client",
+    # "q_observability",
+    # "q_auth_parser",
+    # "q_h2m_client",
+    # "q_ui_schemas",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=7.0.0",
+    "pytest-cov>=5.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock==3.12.0",
+    
+    # Code Quality & Formatting
+    "mypy>=1.10.0",
+    "ruff>=0.5.0",
+    "black>=24.3.0",
+    "isort>=5.13.0",
+    "flake8==7.0.0",
+    
+    # Security Tools
+    "bandit==1.8.6",
+    "safety==3.6.2",
+    "pbr==6.0.0",
+    
+    # Type stubs
+    "types-python-dateutil",
+]
+spark = [
+    # Big Data Processing (Spark/Flink)
+    "pyspark==3.4.1",
+    "delta-spark==2.4.0",
+    "pandas==1.5.3",
+    # Note: apache-flink versions vary by job, install separately as needed
+]
+quantum = [
+    # Quantum Computing Libraries (commented out - install separately if needed)
+    # "qiskit>=0.45.0",
+    # "cirq>=1.3.0", 
+    # "pennylane>=0.33.0",
+    # "qiskit-aer>=0.13.0",
+    # "qiskit-ibmq-provider>=0.20.0",
+    # "qiskit-optimization>=0.6.0",
+    # "qiskit-machine-learning>=0.7.0",
+]
+neuromorphic = [
+    # Neuromorphic Computing Libraries (commented out - install separately if needed)
+    # "brian2>=2.5.0",
+    # "nengo>=3.2.0",
+    # "nest-simulator>=3.5.0",
+    # "snntorch>=0.7.0",
+    # "spikingjelly>=0.0.0.0.14",
+]
+integration = [
+    # Integration Testing
+    "docker-compose",
+    "tenacity",
+]
 
 [tool.black]
 line-length = 100
