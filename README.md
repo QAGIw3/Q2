@@ -153,6 +153,32 @@ python demo_quantum_ai.py
 open http://localhost:8000/docs
 ```
 
+## Q2 Compute Core - Dev Quickstart
+
+The Q2 compute core provides CPU/GPU quantum variational neural network (QVNN) training capabilities.
+
+### Setup
+```bash
+python -m venv .venv && . .venv/bin/activate
+make q2-dev
+cp .env.example .env
+make q2-serve
+# POST http://localhost:8000/v1/compute/qvnn/train
+```
+
+### Docker
+```bash
+make q2-docker-build-cpu && make q2-docker-run-cpu
+# GPU
+make q2-docker-build-gpu && make q2-docker-run-gpu
+```
+
+### Example Usage
+```bash
+curl -s -X POST http://localhost:8000/v1/compute/qvnn/train -H 'content-type: application/json' \
+  -d '{"n":2048,"in_dim":64,"hidden":128,"out_dim":1,"steps":100,"lr":0.001,"amp":true}'
+```
+
 ## API Documentation
 
 ### Quantum Machine Learning
